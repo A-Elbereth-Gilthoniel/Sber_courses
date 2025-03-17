@@ -28,7 +28,18 @@ $(LEX_OBJ) : $(LEX_OUT)
 $(LEX_OUT) : $(LEX_SRC)
 	$(LEX) -o $@ $<
 
-.PHONY : clean
-clean :
+.PHONY : clean test
+
+test: $(TARGET)
+	@echo "Запуск тестов..."
+	@echo "Тест 1"
+	@echo "2 + 3 * (4 - 1)" | ./$(TARGET)
+	@echo "Тест 2"
+	@echo "(2-3)" | ./$(TARGET)
+	@echo "Тест 3"
+	@echo "3-2+5-" | ./$(TARGET)
+	@echo "Тестирование завершено."
+
+clean:
 	rm -f $(PREF_OBJ)*.o $(TARGET) $(LEX_OUT) $(LEX_H)
 
