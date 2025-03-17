@@ -44,6 +44,15 @@ void Table::PushCondition(const vector<token_t>& token_stack, const vector<token
 
 //=================================================
 
+string Table::LastCondition()
+{
+    if (action_cond[action_cond.size() - 1] == "Accept" || action_cond[action_cond.size() - 1] == "Error")
+        return "End";
+    return action_cond[action_cond.size() - 1];
+}
+
+//================================================
+
 void Table::Print()
 {
     int padding, left_padding, right_padding;

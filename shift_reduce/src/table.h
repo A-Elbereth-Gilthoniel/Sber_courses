@@ -10,6 +10,7 @@ public:
 
     Table(int size);
     void PushCondition(const vector<token_t>& token_stack, const vector<token_t>& input, int offset, string action);
+    string LastCondition();
     void Print();
 
     ~Table() {};

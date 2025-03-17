@@ -1,18 +1,18 @@
 enum tokens
 {
-    OPENING_BR,
-    CLOSING_BR,
-    MULTIPLY,
-    DIVISION,
-    ADD,
-    SUBTRACT,
-    VALUE,
-    VARIABLE,
-    E_TYPE,
-    F_TYPE,
-    T_TYPE,
-    UNKNOWN,
-    EMPTY
+    OPENING_BR = 1,
+    CLOSING_BR = 2,
+    MULTIPLY = 3,
+    DIVISION = 4,
+    ADD = 5,
+    SUBTRACT = 6,
+    VALUE = 7,
+    VARIABLE = 8,
+    E_TYPE = 9,
+    F_TYPE = 10,
+    T_TYPE = 11,
+    UNKNOWN = 12,
+    EMPTY = 13
 };
 
 

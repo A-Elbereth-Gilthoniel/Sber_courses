@@ -7,7 +7,7 @@ void syntax_analysis(vector<token_t>& token_list, Table* table)
     vector<token_t> entire_stack;
     string act;
     int i = 0;
-    while (i <= token_list.size() + 1)
+    while (table->LastCondition() != "End")
     {
         cur = {UNKNOWN, 0.0};
         entire_stack = token_stack->data;
@@ -53,7 +53,7 @@ void syntax_analysis(vector<token_t>& token_list, Table* table)
                 table->PushCondition(entire_stack, token_list, i, process_f(token_stack));
                 break;
             case T_TYPE:
-                table->PushCondition(entire_stack, token_list, i, process_t(token_stack));
+                table->PushCondition(entire_stack, token_list, i, process_t(token_stack, token_list, i));
                 break;
             case E_TYPE:
                 table->PushCondition(entire_stack, token_list, i, process_e(token_stack));
@@ -70,13 +70,19 @@ void syntax_analysis(vector<token_t>& token_list, Table* table)
             }
             else
             {
-                table->PushCondition(entire_stack, token_list, i, process_plus_minus(token_stack));
+                table->PushCondition(entire_stack, token_list, i, process_if_no_changes(token_stack));
+                if (size(token_stack->data) == 1 && token_stack->data[0].info == E_TYPE)
+                    table->PushCondition(token_stack->data, token_list, i, string("Accept"));
+                else if (!table->table_is_changed)
+                {
+                    table->PushCondition(token_stack->data, token_list, i, string("Error"));
+                }
             }
             i++;
         }
         table->table_is_changed = false;
     }
-    table->PushCondition(token_stack->data, token_list, i, string("accept"));
+
 }
 
 //=========================================================
@@ -112,12 +118,21 @@ string process_f(Stack* token_stack)
 
 //================================================
 
-string process_t(Stack* token_stack)
+string process_t(Stack* token_stack, vector<token_t>& elements, int offset)
 {
-    token_t stack_elem = token_stack->Pop();
+    token_t e_tok = {E_TYPE, 0.0};
     token_t a = {T_TYPE, 0.0};
     token_t b;
     ostringstream oss;
+    if (offset < elements.size())
+    {
+        if (elements[offset].info == ADD || elements[offset].info == SUBTRACT || elements[offset].info == CLOSING_BR)
+        {
+            token_stack->Push(e_tok);
+            return string("Reduce E -> T");
+        }
+    }
+    token_t stack_elem = token_stack->Pop();
     switch (stack_elem.info)
     {
         case MULTIPLY:
@@ -141,11 +156,27 @@ string process_t(Stack* token_stack)
         default:
             return string("Error");
     }
+
 }
 
 //==============================================
 
 string process_plus_minus(Stack* token_stack)
+{
+    token_t a1 = token_stack->Pop();
+    if (a1.info == MULTIPLY || a1.info == DIVISION || \
+            a1.info == ADD || a1.info == SUBTRACT)
+        return string("Error");
+    else
+    {
+        token_stack->Push(a1);
+        return string("");
+    }
+}
+
+//=====================================================
+
+string process_if_no_changes(Stack* token_stack)
 {
     token_t a1 = token_stack->Pop();
     token_t e_tok = {E_TYPE, 0.0};
@@ -201,5 +232,6 @@ string process_closing_br(Stack* token_stack)
         token_stack->Push(f_t);
         return string("Reduce F -> (E)");
     }
+    token_stack->Push(a);
     return string("");
 }
